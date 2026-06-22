@@ -1,0 +1,70 @@
+import pygame
+import random
+import math
+
+# Initialize
+pygame.init()
+
+WIDTH, HEIGHT = 800, 600
+screen = pygame.display.set_mode((WIDTH, HEIGHT))
+pygame.display.set_caption("3D Starfield Simulator")
+
+clock = pygame.time.Clock()
+
+# Star settings
+NUM_STARS = 250
+stars = []
+
+# Create stars in 3D space
+for _ in range(NUM_STARS):
+    stars.append([
+        random.uniform(-WIDTH, WIDTH),   # x
+        random.uniform(-HEIGHT, HEIGHT), # y
+        random.uniform(1, WIDTH)         # z (depth)
+    ])
+
+speed = 10
+
+def draw_star(x, y, size):
+    pygame.draw.circle(screen, (255, 255, 255), (int(x), int(y)), size)
+
+running = True
+while running:
+    screen.fill((0, 0, 0))
+
+    for event in pygame.event.get():
+        if event.type == pygame.QUIT:
+            running = False
+
+    for star in stars:
+        x, y, z = star
+
+        # Move star closer (simulate forward motion)
+        z -= speed
+
+        if z <= 1:
+            x = random.uniform(-WIDTH, WIDTH)
+            y = random.uniform(-HEIGHT, HEIGHT)
+            z = WIDTH
+
+        # Perspective projection
+        k = 200 / z
+        sx = int(x * k + WIDTH / 2)
+        sy = int(y * k + HEIGHT / 2)
+
+        # Size increases as it gets closer
+        size = int((1 - z / WIDTH) * 4)
+        if size < 1:
+            size = 1
+
+        # Update star
+        star[0], star[1], star[2] = x, y, z
+
+        # Draw star if on screen
+        if 0 <= sx < WIDTH and 0 <= sy < HEIGHT:
+            draw_star(sx, sy, size)
+
+    pygame.display.flip()
+    clock.tick(60)
+
+pygame.quit()
