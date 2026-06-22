@@ -1,0 +1,209 @@
+import pygame
+import random
+import math
+
+pygame.init()
+
+WIDTH, HEIGHT = 900, 600
+screen = pygame.display.set_mode((WIDTH, HEIGHT))
+pygame.display.set_caption("Elemental Spell Engine v2")
+
+clock = pygame.time.Clock()
+
+mode = "fire"
+
+# -----------------------------
+# GLOBAL FIELD (for lightning targeting)
+# -----------------------------
+heat_map = [[0 for _ in range(30)] for _ in range(20)]
+
+def add_heat(x, y, amount=1):
+    gx = int((x / WIDTH) * 29)
+    gy = int((y / HEIGHT) * 19)
+    gx = max(0, min(29, gx))
+    gy = max(0, min(19, gy))
+    heat_map[gy][gx] += amount
+
+
+def get_hotspot():
+    mx, my, maxv = 0, 0, 0
+    for y in range(20):
+        for x in range(30):
+            if heat_map[y][x] > maxv:
+                maxv = heat_map[y][x]
+                mx, my = x, y
+
+    return (
+        int(mx / 29 * WIDTH),
+        int(my / 19 * HEIGHT)
+    )
+
+
+# -----------------------------
+# LIGHTNING (targets heat)
+# -----------------------------
+def lightning(start, end, segments=7):
+    points = [start]
+    x1, y1 = start
+    x2, y2 = end
+
+    for i in range(1, segments):
+        t = i / segments
+        x = x1 + (x2 - x1) * t
+        y = y1 + (y2 - y1) * t
+
+        x += random.uniform(-30, 30)
+        y += random.uniform(-30, 30)
+
+        points.append((x, y))
+
+    points.append(end)
+    return points
+
+
+def draw_lightning(points):
+    pygame.draw.lines(screen, (100, 100, 255), False, points, 6)
+    pygame.draw.lines(screen, (200, 200, 255), False, points, 3)
+    pygame.draw.lines(screen, (255, 255, 255), False, points, 1)
+
+
+# -----------------------------
+# PARTICLE
+# -----------------------------
+class Particle:
+    def __init__(self, x, y, mode):
+        self.x = x
+        self.y = y
+        self.mode = mode
+        self.life = 80
+
+        angle = random.uniform(0, math.pi * 2)
+        speed = random.uniform(1, 3)
+
+        self.vx = random.uniform(-1, 1)
+        self.vy = random.uniform(-1, 1)
+
+    def update(self):
+        # FIRE spreads
+        if self.mode == "fire":
+            self.vy -= 0.08
+            self.vx += random.uniform(-0.2, 0.2)
+            add_heat(self.x, self.y, 2)
+            self.color = (255, random.randint(80, 160), 0)
+
+        # ICE slows
+        elif self.mode == "ice":
+            self.vx *= 0.98
+            self.vy *= 0.98
+            self.color = (120, 200, 255)
+
+        # WIND field (direction bias)
+        elif self.mode == "wind":
+            self.vx += random.uniform(-0.2, 0.2)
+            self.vy += random.uniform(-0.1, 0.1)
+            self.color = (200, 200, 200)
+
+        # LIGHTNING sparks
+        elif self.mode == "lightning":
+            self.vy += 0.15
+            self.color = (random.randint(180, 255), random.randint(180, 255), 255)
+
+        # movement
+        self.x += self.vx
+        self.y += self.vy
+        self.life -= 1
+
+    def draw(self):
+        fade = max(self.life / 80, 0.1)
+        c = (
+            int(self.color[0] * fade),
+            int(self.color[1] * fade),
+            int(self.color[2] * fade)
+        )
+        pygame.draw.circle(screen, c, (int(self.x), int(self.y)), 3)
+
+
+# -----------------------------
+# SYSTEM
+# -----------------------------
+particles = []
+lightning_points = []
+flash = 0
+
+def emit(x, y):
+    for _ in range(3):
+        particles.append(Particle(x, y, mode))
+
+
+# -----------------------------
+# LOOP
+# -----------------------------
+running = True
+
+while running:
+    screen.fill((8, 8, 20))
+
+    for event in pygame.event.get():
+        if event.type == pygame.QUIT:
+            running = False
+
+        if event.type == pygame.KEYDOWN:
+            if event.key == pygame.K_1:
+                mode = "fire"
+            if event.key == pygame.K_2:
+                mode = "ice"
+            if event.key == pygame.K_3:
+                mode = "wind"
+            if event.key == pygame.K_4:
+                mode = "lightning"
+
+    # decay heat map
+    for y in range(20):
+        for x in range(30):
+            heat_map[y][x] *= 0.95
+
+    # mouse emit
+    if pygame.mouse.get_pressed()[0]:
+        mx, my = pygame.mouse.get_pos()
+        emit(mx, my)
+
+        # FIRE + WIND = plasma burst
+        if mode == "fire" and random.random() < 0.05:
+            particles.append(Particle(mx, my, "lightning"))
+
+        # LIGHTNING targets heat
+        if mode == "lightning" and random.random() < 0.2:
+            start = (random.randint(100, WIDTH-100), 0)
+            end = get_hotspot()
+            lightning_points = lightning(start, end)
+            flash = 10
+
+    # draw lightning
+    if lightning_points:
+        draw_lightning(lightning_points)
+
+    # flash effect
+    if flash > 0:
+        overlay = pygame.Surface((WIDTH, HEIGHT))
+        overlay.set_alpha(50)
+        overlay.fill((200, 200, 255))
+        screen.blit(overlay, (0, 0))
+        flash -= 1
+
+    # particles
+    for p in particles[:]:
+        p.update()
+        p.draw()
+
+        if p.life <= 0:
+            particles.remove(p)
+
+    # UI
+    font = pygame.font.SysFont(None, 24)
+    text = font.render("1 Fire  2 Ice  3 Wind  4 Lightning | Hold Mouse", True, (220,220,220))
+    screen.blit(text, (10, 10))
+
+    pygame.display.flip()
+    clock.tick(60)
+
+pygame.quit()
