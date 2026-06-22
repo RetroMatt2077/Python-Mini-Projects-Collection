@@ -1,0 +1,38 @@
+import pygame
+
+pygame.init()
+
+SIZE=20
+GRID=32
+
+screen=pygame.display.set_mode((SIZE*GRID,SIZE*GRID))
+
+pixels=[[0]*GRID for _ in range(GRID)]
+
+running=True
+
+while running:
+
+    for e in pygame.event.get():
+        if e.type==pygame.QUIT:
+            running=False
+
+    if pygame.mouse.get_pressed()[0]:
+        x,y=pygame.mouse.get_pos()
+        pixels[y//SIZE][x//SIZE]=1
+
+    if pygame.mouse.get_pressed()[2]:
+        x,y=pygame.mouse.get_pos()
+        pixels[y//SIZE][x//SIZE]=0
+
+    screen.fill((40,40,40))
+
+    for y in range(GRID):
+        for x in range(GRID):
+            color=(255,255,255) if pixels[y][x] else (0,0,0)
+            pygame.draw.rect(screen,color,(x*SIZE,y*SIZE,SIZE,SIZE))
+            pygame.draw.rect(screen,(80,80,80),(x*SIZE,y*SIZE,SIZE,SIZE),1)
+
+    pygame.display.flip()
+
+pygame.quit()
