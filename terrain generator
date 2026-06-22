@@ -1,0 +1,106 @@
+import pygame
+import random
+import math
+
+# -----------------------------
+# Settings
+# -----------------------------
+SIZE = 257  # must be (2^n) + 1
+SCALE = 3    # pixel size
+ROUGHNESS = 0.6
+
+WIDTH = HEIGHT = SIZE * SCALE
+
+pygame.init()
+screen = pygame.display.set_mode((WIDTH, HEIGHT))
+pygame.display.set_caption("Procedural Terrain Generator")
+
+# -----------------------------
+# Create grid
+# -----------------------------
+grid = [[0 for _ in range(SIZE)] for _ in range(SIZE)]
+
+# Corners seed
+grid[0][0] = random.random()
+grid[0][SIZE-1] = random.random()
+grid[SIZE-1][0] = random.random()
+grid[SIZE-1][SIZE-1] = random.random()
+
+# -----------------------------
+# Diamond-Square Algorithm
+# -----------------------------
+step = SIZE - 1
+
+while step > 1:
+    half = step // 2
+
+    # Diamond step
+    for y in range(half, SIZE, step):
+        for x in range(half, SIZE, step):
+            avg = (
+                grid[y-half][x-half] +
+                grid[y-half][x+half] +
+                grid[y+half][x-half] +
+                grid[y+half][x+half]
+            ) / 4.0
+
+            grid[y][x] = avg + (random.random() - 0.5) * ROUGHNESS
+
+    # Square step
+    for y in range(0, SIZE, half):
+        for x in range((y + half) % step, SIZE, step):
+            s = []
+
+            if x - half >= 0:
+                s.append(grid[y][x-half])
+            if x + half < SIZE:
+                s.append(grid[y][x+half])
+            if y - half >= 0:
+                s.append(grid[y-half][x])
+            if y + half < SIZE:
+                s.append(grid[y+half][x])
+
+            grid[y][x] = sum(s) / len(s) + (random.random() - 0.5) * ROUGHNESS
+
+    step //= 2
+    ROUGHNESS *= 0.5
+
+# Normalize values
+min_v = min(min(row) for row in grid)
+max_v = max(max(row) for row in grid)
+
+def color(v):
+    v = (v - min_v) / (max_v - min_v)
+
+    if v < 0.3:
+        return (0, 0, int(150 + v * 200))      # water
+    elif v < 0.4:
+        return (240, 220, 150)                # sand
+    elif v < 0.7:
+        return (0, int(180 + v * 50), 0)      # grass
+    elif v < 0.85:
+        return (100, 100, 100)                # rock
+    else:
+        return (255, 255, 255)                # snow
+
+# -----------------------------
+# Render
+# -----------------------------
+running = True
+while running:
+    for event in pygame.event.get():
+        if event.type == pygame.QUIT:
+            running = False
+
+    for y in range(SIZE):
+        for x in range(SIZE):
+            c = color(grid[y][x])
+            pygame.draw.rect(
+                screen,
+                c,
+                (x * SCALE, y * SCALE, SCALE, SCALE)
+            )
+
+    pygame.display.flip()
+
+pygame.quit()
