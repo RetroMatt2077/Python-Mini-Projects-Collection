@@ -1,0 +1,23 @@
+import random
+import os
+import time
+
+chars = "01アイウエオカキクケコサシスセソABCDEFGHIJKLMNOPQRSTUVWXYZ"
+
+width = 80
+drops = [0] * width
+
+while True:
+    os.system("cls" if os.name == "nt" else "clear")
+
+    for y in range(25):
+        line = ""
+        for x in range(width):
+            if drops[x] == y:
+                line += random.choice(chars)
+                drops[x] = random.randint(0, 25)
+            else:
+                line += " "
+        print(line)
+
+    time.sleep(0.05)
