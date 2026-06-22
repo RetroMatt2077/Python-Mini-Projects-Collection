@@ -1,0 +1,21 @@
+import turtle
+
+t = turtle.Turtle()
+t.speed(0)
+t.left(90)
+
+def tree(length):
+    if length < 5:
+        return
+
+    t.forward(length)
+    t.left(30)
+    tree(length*0.7)
+    t.right(60)
+    tree(length*0.7)
+    t.left(30)
+    t.backward(length)
+
+tree(100)
+
+turtle.done()
