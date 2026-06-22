@@ -1,40 +1,46 @@
 # 🐍 Python Mini Projects Collection
 
-![Python](https://img.shields.io/badge/Python-3.x-blue.svg)
-![License](https://img.shields.io/badge/License-MIT-green.svg)
-![Status](https://img.shields.io/badge/Status-Active-success.svg)
+A growing collection of fun, educational, and creative Python scripts and mini-projects. Perfect for learning, practicing, and having fun with Python!
 
-A growing collection of fun, beginner-friendly, and intermediate Python projects. This repository is designed to help me improve my Python programming skills while creating useful tools, games, and utilities.
+![Python](https://img.shields.io/badge/Python-3776AB?style=for-the-badge&logo=python&logoColor=white)
+![GitHub repo size](https://img.shields.io/github/repo-size/RetroMatt2077/Python-Mini-Projects-Collection)
 
-Whether you're learning Python or just looking for inspiration, feel free to explore, use, and modify these projects!
+## 📋 Featured Projects
 
----
+| Project | Type | Description |
+|---------|------|-----------|
+| `rock_paper_scissors_deluxe.py` | Game | Enhanced Rock Paper Scissors with scores and multiple rounds |
+| `hangman.py` | Game | Classic word guessing game |
+| `numberguess.py` | Game | Number guessing game with hints |
+| `tic_tac_toe.py` | Game | Two-player Tic-Tac-Toe |
+| `diceroll.py` / `dndadvantage.py` / `dndadvanced.py` | RPG Tool | Dice rollers and D&D helpers |
+| `minirpg.py` / `textrpg.py` / `retro_matt_rpg_deluxe.py` | RPG | Text-based RPG adventures |
+| `legendofpythonia.py` / `legendsoffantasy.py` | RPG | Fantasy storytelling games |
+| `zombiesurvival.py` | Game | Zombie survival game |
+| `racinggame.py` | Game | Simple racing game |
+| `alienencounter.py` | Game | Alien encounter simulator |
+| `magic8ball.py` | Fun | Classic Magic 8-Ball |
+| `coinflip.py` | Utility | Coin flip simulator |
+| `hackerterminal.py` | Visual | Cool hacker-style terminal animation |
 
-# 📂 Project Categories
+### Visual / Creative Projects (Folders)
+- **3D Starfield Simulator**
+- **Conway's Game of Life**
+- **Fireworks Animation**
+- **Fractal Tree**
+- **Julia Fractal**
+- **Matrix Digital Rain**
+- **Particle Effects Engine**
+- **Pixel Art Generator**
+- **Terrain Generator**
+- **Lightning Generator**
 
-## 🎮 Games
-- Rock Paper Scissors
-- Hangman
-- Number Guessing Game
-- Tic-Tac-Toe
-- Blackjack
-- Snake (Pygame)
-- Pong
-- Space Invaders
-- Tetris
-- Connect Four
-- Dungeon Crawler
-- Legends of Fantasy RPG
+## 🚀 How to Run
 
----
-
-## 🎲 RPG Tools
-- D20 Dice Roller
-- Loot Generator
-- Character Creator
-- Monster Generator
-- Random Encounter Generator
-- Inventory System
+1. **Clone the repository**
+   ```bash
+   git clone https://github.com/RetroMatt2077/Python-Mini-Projects-Collection.git
+   cd Python-Mini-Projects-Collection- Inventory System
 
 ---
 
