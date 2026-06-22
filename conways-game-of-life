@@ -1,0 +1,33 @@
+import random
+import time
+import os
+
+W,H=40,20
+
+grid=[[random.randint(0,1) for x in range(W)] for y in range(H)]
+
+while True:
+    os.system("cls" if os.name=="nt" else "clear")
+
+    for row in grid:
+        print("".join("█" if c else " " for c in row))
+
+    new=[]
+
+    for y in range(H):
+        row=[]
+        for x in range(W):
+            n=0
+            for dy in(-1,0,1):
+                for dx in(-1,0,1):
+                    if dx==dy==0:
+                        continue
+                    n+=grid[(y+dy)%H][(x+dx)%W]
+            if grid[y][x]:
+                row.append(1 if n in (2,3) else 0)
+            else:
+                row.append(1 if n==3 else 0)
+        new.append(row)
+
+    grid=new
+    time.sleep(.15)
